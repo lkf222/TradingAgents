@@ -1,6 +1,6 @@
 
 
-def create_bear_researcher(llm, memory):
+def create_bear_researcher(llm):
     def bear_node(state) -> dict:
         investment_debate_state = state["investment_debate_state"]
         history = investment_debate_state.get("history", "")
@@ -12,14 +12,7 @@ def create_bear_researcher(llm, memory):
         news_report = state["news_report"]
         fundamentals_report = state["fundamentals_report"]
 
-        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}"
-        past_memories = memory.get_memories(curr_situation, n_matches=2)
-
-        past_memory_str = ""
-        for i, rec in enumerate(past_memories, 1):
-            past_memory_str += rec["recommendation"] + "\n\n"
-
-        prompt = f"""你是一位空头分析师，提出不投资该股票的理由。你的目标是提出一个有充分理由的论点，强调风险、挑战和负面指标。利用提供的研究和数据来突出潜在缺点并有效反驳多头观点。
+        prompt = f"""You are a Bear Analyst making the case against investing in the stock. Your goal is to present a well-reasoned argument emphasizing risks, challenges, and negative indicators. Leverage the provided research and data to highlight potential downsides and counter bullish arguments effectively.
 
 需要关注的重点：
 
@@ -31,14 +24,13 @@ def create_bear_researcher(llm, memory):
 
 可用资源：
 
-市场研究报告：{market_research_report}
-社交媒体情绪报告：{sentiment_report}
-最新世界事务新闻：{news_report}
-公司基本面报告：{fundamentals_report}
-辩论对话历史：{history}
-上一个多头论点：{current_response}
-类似情况的经验教训：{past_memory_str}
-利用这些信息提供令人信服的空头论点，反驳多头的观点，并进行展示投资该股票风险和弱点的动态辩论。你还必须处理反思并从过去犯下的错误中吸取教训。
+Market research report: {market_research_report}
+Social media sentiment report: {sentiment_report}
+Latest world affairs news: {news_report}
+Company fundamentals report: {fundamentals_report}
+Conversation history of the debate: {history}
+Last bull argument: {current_response}
+Use this information to deliver a compelling bear argument, refute the bull's claims, and engage in a dynamic debate that demonstrates the risks and weaknesses of investing in the stock.
 """
 
         response = llm.invoke(prompt)

@@ -1,6 +1,6 @@
 
 
-def create_bull_researcher(llm, memory):
+def create_bull_researcher(llm):
     def bull_node(state) -> dict:
         investment_debate_state = state["investment_debate_state"]
         history = investment_debate_state.get("history", "")
@@ -12,14 +12,7 @@ def create_bull_researcher(llm, memory):
         news_report = state["news_report"]
         fundamentals_report = state["fundamentals_report"]
 
-        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}"
-        past_memories = memory.get_memories(curr_situation, n_matches=2)
-
-        past_memory_str = ""
-        for i, rec in enumerate(past_memories, 1):
-            past_memory_str += rec["recommendation"] + "\n\n"
-
-        prompt = f"""你是一位多头分析师，主张投资这只股票。你的任务是建立一个基于证据的强力案例，强调增长潜力、竞争优势和积极的市场指标。利用提供的研究和数据来解决问题并有效反驳空头观点。
+        prompt = f"""You are a Bull Analyst advocating for investing in the stock. Your task is to build a strong, evidence-based case emphasizing growth potential, competitive advantages, and positive market indicators. Leverage the provided research and data to address concerns and counter bearish arguments effectively.
 
 需要关注的重点：
 - 增长潜力：突出公司的市场机会、收入预测和可扩展性。
@@ -28,15 +21,14 @@ def create_bull_researcher(llm, memory):
 - 空头反驳点：用具体数据和合理推理批判性地分析空头论点，彻底解决问题并展示多头观点为何更具说服力。
 - 互动交流：以对话方式呈现你的论点，直接回应空头分析师的观点并进行有效的辩论，而不仅仅是列出数据。
 
-可用资源：
-市场研究报告：{market_research_report}
-社交媒体情绪报告：{sentiment_report}
-最新世界事务新闻：{news_report}
-公司基本面报告：{fundamentals_report}
-辩论对话历史：{history}
-上一个空头论点：{current_response}
-类似情况的经验教训：{past_memory_str}
-利用这些信息提供令人信服的多头论点，反驳空头的担忧，并进行展示多头立场优势的动态辩论。你还必须处理反思并从过去犯下的错误中吸取教训。
+Resources available:
+Market research report: {market_research_report}
+Social media sentiment report: {sentiment_report}
+Latest world affairs news: {news_report}
+Company fundamentals report: {fundamentals_report}
+Conversation history of the debate: {history}
+Last bear argument: {current_response}
+Use this information to deliver a compelling bull argument, refute the bear's concerns, and engage in a dynamic debate that demonstrates the strengths of the bull position.
 """
 
         response = llm.invoke(prompt)
